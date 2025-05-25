@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modern Admin Dashboard</title>
+  <style>
+    :root {
+      --sidebar-width: 220px;
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --bg: #f4f6fb;
+      --white: #fff;
+      --gray: #e5e7eb;
+      --text: #22223b;
+      --shadow: 0 2px 8px rgba(0,0,0,0.04);
+      --card-bg: #ffffff;
+      --hover-bg: #e0e7ff;
+    }
+
+    [data-theme="dark"] {
+      --bg: #1a1b1e;
+      --text: #ffffff;
+      --white: #2d2e32;
+      --gray: #3f4046;
+      --card-bg: #2d2e32;
+      --hover-bg: #3f4046;
+      --shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--white);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 0;
+      position: fixed;
+      height: 100vh;
+      transition: background-color 0.3s;
+    }
+    .sidebar-header { text-align: center; margin-bottom: 32px; }
+    .sidebar-header h2 { color: var(--primary); font-size: 1.5rem; font-weight: 700; }
+    .sidebar nav ul { list-style: none; }
+    .sidebar nav ul li {
+      padding: 14px 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+    .sidebar nav ul li.active,
+    .sidebar nav ul li:hover {
+      background: var(--primary);
+      color: var(--white);
+    }
+    .sidebar-footer { text-align: center; margin-top: 32px; }
+    .sidebar-footer button {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      padding: 10px 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .sidebar-footer button:hover { background: var(--primary-dark); }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 32px 0 32px;
+      background: var(--bg);
+      transition: background-color 0.3s;
+    }
+    .search-bar { display: flex; gap: 8px; }
+    .search-bar input {
+      padding: 8px 12px;
+      border: 1px solid var(--gray);
+      border-radius: 4px;
+      font-size: 1rem;
+      background: var(--white);
+      color: var(--text);
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .search-bar button {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      padding: 8px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .search-bar button:hover { background: var(--primary-dark); }
+    .user-info { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      cursor: pointer;
+    }
+    .dashboard { padding: 32px; flex: 1; }
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .dashboard-header h1 { font-size: 2rem; font-weight: 700; }
+    .dashboard-header button {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .dashboard-header button:hover { background: var(--primary-dark); }
+    .table-responsive {
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+      margin-bottom: 24px;
+      transition: background-color 0.3s;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+    th, td { padding: 14px 16px; text-align: left; }
+    th { background: var(--bg); font-weight: 600; }
+    tr:nth-child(even) { background: var(--hover-bg); }
+    tr:hover { background: var(--hover-bg); }
+    a { color: var(--primary); text-decoration: none; font-weight: 500; }
+    .pagination {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 16px;
+    }
+    .pagination button {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .pagination button:hover { background: var(--primary-dark); }
+    .pagination button:disabled {
+      background: var(--gray);
+      cursor: not-allowed;
+    }
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 1.5rem;
+      padding: 8px;
+      margin-left: 16px;
+    }
+    .loading {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .loading.active {
+      display: flex;
+    }
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid var(--white);
+      border-top: 5px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .user-dropdown {
+      position: absolute;
+      top: 60px;
+      right: 32px;
+      background: var(--white);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 8px 0;
+      display: none;
+      z-index: 100;
+    }
+    .user-dropdown.active {
+      display: block;
+    }
+    .user-dropdown button {
+      display: block;
+      width: 100%;
+      padding: 8px 16px;
+      text-align: left;
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .user-dropdown button:hover {
+      background: var(--hover-bg);
+    }
+    @media (max-width: 900px) {
+      .main-content { margin-left: 0; }
+      .sidebar { display: none; }
+      .dashboard { padding: 16px; }
+      header { padding: 16px; }
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: var(--white);
+      padding: 24px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text);
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--gray);
+      border-radius: 4px;
+      background: var(--white);
+      color: var(--text);
+    }
+    .form-group textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .modal-footer button {
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+    }
+    .btn-secondary {
+      background: var(--gray);
+      color: var(--text);
+      border: none;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 24px;
+      border-radius: 4px;
+      color: var(--white);
+      display: none;
+      z-index: 1000;
+    }
+    .toast.success {
+      background: #10b981;
+    }
+    .toast.error {
+      background: #ef4444;
+    }
+    .toast.active {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    .job-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .job-actions button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .job-actions button:hover {
+      background: var(--hover-bg);
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .stat-card h3 {
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .stat-card p {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    .job-details {
+      padding: 20px;
+    }
+    .job-description {
+      margin: 16px 0;
+      padding: 16px;
+      background: var(--bg);
+      border-radius: 4px;
+      white-space: pre-wrap;
+    }
+    .job-apply {
+      margin-top: 24px;
+      text-align: center;
+    }
+    .job-apply a {
+      display: inline-block;
+      padding: 12px 24px;
+      text-decoration: none;
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--gray);
+      border-radius: 4px;
+      background: var(--white);
+      color: var(--text);
+      font-size: 1rem;
+    }
+    .search-results-info {
+      margin: 16px 0;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 4px;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <div class="loading">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Add Job Modal -->
+  <div class="modal" id="addJobModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add New Job</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="addJobForm">
+        <div class="form-group">
+          <label for="jobTitle">Job Title</label>
+          <input type="text" id="jobTitle" required>
+        </div>
+        <div class="form-group">
+          <label for="jobCompany">Company</label>
+          <input type="text" id="jobCompany" required>
+        </div>
+        <div class="form-group">
+          <label for="jobLocation">Location</label>
+          <input type="text" id="jobLocation" required>
+        </div>
+        <div class="form-group">
+          <label for="jobDescription">Description</label>
+          <textarea id="jobDescription" required></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="cancelAddJob">Cancel</button>
+          <button type="submit" class="btn-primary">Add Job</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Job Modal -->
+  <div class="modal" id="editJobModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Job</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="editJobForm">
+        <input type="hidden" id="editJobId">
+        <div class="form-group">
+          <label for="editJobTitle">Job Title</label>
+          <input type="text" id="editJobTitle" required>
+        </div>
+        <div class="form-group">
+          <label for="editJobCompany">Company</label>
+          <input type="text" id="editJobCompany" required>
+        </div>
+        <div class="form-group">
+          <label for="editJobLocation">Location</label>
+          <input type="text" id="editJobLocation" required>
+        </div>
+        <div class="form-group">
+          <label for="editJobDescription">Description</label>
+          <textarea id="editJobDescription" required></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="cancelEditJob">Cancel</button>
+          <button type="submit" class="btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Job Search Modal -->
+  <div class="modal" id="jobSearchModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Search Jobs to Scrape</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="jobSearchForm">
+        <div class="form-group">
+          <label for="searchKeywords">Keywords</label>
+          <input type="text" id="searchKeywords" placeholder="e.g., Software Engineer, React Developer" required>
+        </div>
+        <div class="form-group">
+          <label for="searchLocation">Location</label>
+          <input type="text" id="searchLocation" placeholder="e.g., Remote, New York">
+        </div>
+        <div class="form-group">
+          <label for="searchSite">Job Site</label>
+          <select id="searchSite" required>
+            <option value="all">All Sites</option>
+            <option value="indeed">Indeed</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="glassdoor">Glassdoor</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="cancelJobSearch">Cancel</button>
+          <button type="submit" class="btn-primary">Search & Scrape</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div class="toast" id="toast"></div>
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Admin Panel</h2>
+    </div>
+    <nav>
+      <ul>
+        <li class="active" data-page="dashboard"><span>🏠</span> Dashboard</li>
+        <li data-page="reports"><span>📄</span> Reports</li>
+        <li data-page="settings"><span>⚙️</span> Settings</li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header>
+      <div class="search-bar">
+        <input type="text" placeholder="Search jobs..." id="searchInput"/>
+        <button id="searchBtn">Search</button>
+      </div>
+      <div class="user-info">
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <img src="https://i.pravatar.cc/40" alt="User Avatar" class="avatar" id="userAvatar"/>
+        <span>admin@example.com</span>
+        <div class="user-dropdown" id="userDropdown">
+          <button id="profileBtn">👤 Profile</button>
+          <button id="settingsBtn">⚙️ Settings</button>
+          <button id="logoutDropdownBtn">🚪 Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="dashboard">
+      <div class="dashboard-header">
+        <h1>Job Listings</h1>
+        <div>
+          <button id="addJobBtn" class="btn-primary">Add Job</button>
+          <button id="scrapeBtn">Scrape Now</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <h3>Total Jobs</h3>
+          <p id="totalJobs">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Active Jobs</h3>
+          <p id="activeJobs">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Remote Jobs</h3>
+          <p id="remoteJobs">0</p>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Company</th>
+              <th>Location</th>
+              <th>Posted Date</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="jobTableBody">
+            <!-- Jobs will be loaded dynamically -->
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <button id="prevBtn" disabled>&lt; Prev</button>
+        <span id="pageInfo">Page 1 of 1</span>
+        <button id="nextBtn" disabled>Next &gt;</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Job Management
+    class JobManager {
+      constructor() {
+        this.jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+        this.currentPage = 1;
+        this.jobsPerPage = 5;
+        this.filteredJobs = [...this.jobs];
+        this.jobSites = {
+          indeed: 'https://www.indeed.com/jobs?q=',
+          linkedin: 'https://www.linkedin.com/jobs/search/?keywords=',
+          glassdoor: 'https://www.glassdoor.com/Job/jobs.htm?sc.keyword='
+        };
+      }
+
+      addJob(job) {
+        job.id = Date.now();
+        job.date = new Date().toISOString().split('T')[0];
+        this.jobs.unshift(job);
+        this.saveJobs();
+        this.updateStats();
+        return job;
+      }
+
+      updateJob(id, updatedJob) {
+        const index = this.jobs.findIndex(job => job.id === id);
+        if (index !== -1) {
+          this.jobs[index] = { ...this.jobs[index], ...updatedJob };
+          this.saveJobs();
+          this.updateStats();
+          return true;
+        }
+        return false;
+      }
+
+      deleteJob(id) {
+        const index = this.jobs.findIndex(job => job.id === id);
+        if (index !== -1) {
+          this.jobs.splice(index, 1);
+          this.saveJobs();
+          this.updateStats();
+          return true;
+        }
+        return false;
+      }
+
+      searchJobs(term) {
+        term = term.toLowerCase();
+        this.filteredJobs = this.jobs.filter(job => 
+          job.title.toLowerCase().includes(term) ||
+          job.company.toLowerCase().includes(term) ||
+          job.location.toLowerCase().includes(term)
+        );
+        this.currentPage = 1;
+        this.renderJobs();
+      }
+
+      saveJobs() {
+        localStorage.setItem('jobs', JSON.stringify(this.jobs));
+      }
+
+      updateStats() {
+        document.getElementById('totalJobs').textContent = this.jobs.length;
+        document.getElementById('activeJobs').textContent = this.jobs.length;
+        document.getElementById('remoteJobs').textContent = 
+          this.jobs.filter(job => job.location.toLowerCase().includes('remote')).length;
+      }
+
+      renderJobs() {
+        const start = (this.currentPage - 1) * this.jobsPerPage;
+        const end = start + this.jobsPerPage;
+        const jobsToShow = this.filteredJobs.slice(start, end);
+
+        jobTableBody.innerHTML = jobsToShow.map(job => `
+          <tr>
+            <td>
+              <a href="${job.applyUrl || '#'}" target="_blank" rel="noopener noreferrer" 
+                 onclick="event.preventDefault(); jobManager.handleJobClick(${job.id})">
+                ${job.title}
+              </a>
+            </td>
+            <td>${job.company}</td>
+            <td>${job.location}</td>
+            <td>${job.date}</td>
+            <td>${job.description}</td>
+            <td class="job-actions">
+              <button onclick="jobManager.editJob(${job.id})" title="Edit">✏️</button>
+              <button onclick="jobManager.deleteJob(${job.id})" title="Delete">🗑️</button>
+              <button onclick="jobManager.viewJobDetails(${job.id})" title="View Details">👁️</button>
+            </td>
+          </tr>
+        `).join('');
+
+        this.updatePagination();
+      }
+
+      updatePagination() {
+        const totalPages = Math.ceil(this.filteredJobs.length / this.jobsPerPage);
+        pageInfo.textContent = `Page ${this.currentPage} of ${totalPages}`;
+        prevBtn.disabled = this.currentPage === 1;
+        nextBtn.disabled = this.currentPage === totalPages;
+      }
+
+      editJob(id) {
+        const job = this.jobs.find(job => job.id === id);
+        if (job) {
+          document.getElementById('editJobId').value = id;
+          document.getElementById('editJobTitle').value = job.title;
+          document.getElementById('editJobCompany').value = job.company;
+          document.getElementById('editJobLocation').value = job.location;
+          document.getElementById('editJobDescription').value = job.description;
+          showModal('editJobModal');
+        }
+      }
+
+      nextPage() {
+        const totalPages = Math.ceil(this.filteredJobs.length / this.jobsPerPage);
+        if (this.currentPage < totalPages) {
+          this.currentPage++;
+          this.renderJobs();
+        }
+      }
+
+      prevPage() {
+        if (this.currentPage > 1) {
+          this.currentPage--;
+          this.renderJobs();
+        }
+      }
+
+      handleJobClick(jobId) {
+        const job = this.jobs.find(j => j.id === jobId);
+        if (job) {
+          if (job.applyUrl) {
+            window.open(job.applyUrl, '_blank');
+          } else {
+            this.viewJobDetails(jobId);
+          }
+        }
+      }
+
+      viewJobDetails(jobId) {
+        const job = this.jobs.find(j => j.id === jobId);
+        if (job) {
+          const modal = document.createElement('div');
+          modal.className = 'modal active';
+          modal.innerHTML = `
+            <div class="modal-content">
+              <div class="modal-header">
+                <h2>${job.title}</h2>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+              </div>
+              <div class="job-details">
+                <p><strong>Company:</strong> ${job.company}</p>
+                <p><strong>Location:</strong> ${job.location}</p>
+                <p><strong>Posted:</strong> ${job.date}</p>
+                <p><strong>Description:</strong></p>
+                <div class="job-description">${job.description}</div>
+                ${job.applyUrl ? `
+                  <div class="job-apply">
+                    <a href="${job.applyUrl}" target="_blank" class="btn-primary">Apply Now</a>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `;
+          document.body.appendChild(modal);
+        }
+      }
+
+      async scrapeJobs(searchParams = null) {
+        showLoading();
+        try {
+          const scrapedJobs = await this.fetchJobsFromSites(searchParams);
+          scrapedJobs.forEach(job => this.addJob(job));
+          uiManager.showToast('Successfully scraped new jobs!', 'success');
+        } catch (error) {
+          uiManager.showToast('Error scraping jobs: ' + error.message, 'error');
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async fetchJobsFromSites(searchParams = null) {
+        // Simulate API calls to job sites with search parameters
+        const mockJobs = this.generateMockJobs(searchParams);
+        
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return mockJobs;
+      }
+
+      generateMockJobs(searchParams) {
+        const keywords = searchParams?.keywords?.toLowerCase() || '';
+        const location = searchParams?.location?.toLowerCase() || '';
+        const site = searchParams?.site || 'all';
+
+        const allMockJobs = [
+          {
+            title: 'Senior Frontend Developer',
+            company: 'Tech Corp',
+            location: 'Remote',
+            description: 'Looking for an experienced frontend developer to join our team...',
+            applyUrl: 'https://example.com/job1',
+            site: 'indeed'
+          },
+          {
+            title: 'Full Stack Engineer',
+            company: 'Startup Inc',
+            location: 'New York',
+            description: 'Join our fast-growing startup as a full stack developer...',
+            applyUrl: 'https://example.com/job2',
+            site: 'linkedin'
+          },
+          {
+            title: 'DevOps Engineer',
+            company: 'Cloud Solutions',
+            location: 'San Francisco',
+            description: 'Help us build and maintain our cloud infrastructure...',
+            applyUrl: 'https://example.com/job3',
+            site: 'glassdoor'
+          },
+          {
+            title: 'React Developer',
+            company: 'Web Solutions',
+            location: 'Remote',
+            description: 'Seeking a React developer with 3+ years of experience...',
+            applyUrl: 'https://example.com/job4',
+            site: 'indeed'
+          },
+          {
+            title: 'Software Engineer',
+            company: 'Tech Innovators',
+            location: 'New York',
+            description: 'Join our team of innovative software engineers...',
+            applyUrl: 'https://example.com/job5',
+            site: 'linkedin'
+          }
+        ];
+
+        return allMockJobs.filter(job => {
+          const matchesKeywords = !keywords || 
+            job.title.toLowerCase().includes(keywords) ||
+            job.description.toLowerCase().includes(keywords);
+          
+          const matchesLocation = !location || 
+            job.location.toLowerCase().includes(location);
+          
+          const matchesSite = site === 'all' || job.site === site;
+
+          return matchesKeywords && matchesLocation && matchesSite;
+        });
+      }
+    }
+
+    // UI Management
+    class UIManager {
+      constructor() {
+        this.setupEventListeners();
+        this.loadTheme();
+      }
+
+      setupEventListeners() {
+        // Theme toggle
+        themeToggle.addEventListener('click', () => this.toggleTheme());
+
+        // User dropdown
+        userAvatar.addEventListener('click', () => this.toggleUserDropdown());
+        document.addEventListener('click', (e) => this.handleOutsideClick(e));
+
+        // Navigation
+        document.querySelectorAll('.sidebar nav ul li').forEach(item => {
+          item.addEventListener('click', () => this.handleNavigation(item));
+        });
+
+        // Search
+        searchBtn.addEventListener('click', () => this.handleSearch());
+        searchInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.handleSearch();
+        });
+
+        // Modals
+        document.querySelectorAll('.modal-close').forEach(btn => {
+          btn.addEventListener('click', () => this.closeAllModals());
+        });
+
+        // Forms
+        document.getElementById('addJobForm').addEventListener('submit', (e) => this.handleAddJob(e));
+        document.getElementById('editJobForm').addEventListener('submit', (e) => this.handleEditJob(e));
+
+        // Buttons
+        document.getElementById('addJobBtn').addEventListener('click', () => showModal('addJobModal'));
+        document.getElementById('cancelAddJob').addEventListener('click', () => this.closeAllModals());
+        document.getElementById('cancelEditJob').addEventListener('click', () => this.closeAllModals());
+        document.getElementById('scrapeBtn').addEventListener('click', () => {
+          showModal('jobSearchModal');
+        });
+        document.getElementById('jobSearchForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.handleJobSearch();
+        });
+        document.getElementById('cancelJobSearch').addEventListener('click', () => {
+          this.closeAllModals();
+        });
+        logoutBtn.addEventListener('click', () => this.handleLogout());
+      }
+
+      toggleTheme() {
+        document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+        themeToggle.textContent = document.body.dataset.theme === 'dark' ? '☀️' : '🌙';
+        localStorage.setItem('theme', document.body.dataset.theme);
+      }
+
+      loadTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+          document.body.dataset.theme = savedTheme;
+          themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        }
+      }
+
+      toggleUserDropdown() {
+        userDropdown.classList.toggle('active');
+      }
+
+      handleOutsideClick(e) {
+        if (!userAvatar.contains(e.target) && !userDropdown.contains(e.target)) {
+          userDropdown.classList.remove('active');
+        }
+      }
+
+      handleNavigation(item) {
+        document.querySelector('.sidebar nav ul li.active').classList.remove('active');
+        item.classList.add('active');
+        // Here you would typically load different content based on the selected page
+        console.log(`Navigating to ${item.dataset.page}`);
+      }
+
+      handleSearch() {
+        const searchTerm = searchInput.value;
+        jobManager.searchJobs(searchTerm);
+      }
+
+      handleAddJob(e) {
+        e.preventDefault();
+        const job = {
+          title: document.getElementById('jobTitle').value,
+          company: document.getElementById('jobCompany').value,
+          location: document.getElementById('jobLocation').value,
+          description: document.getElementById('jobDescription').value
+        };
+        jobManager.addJob(job);
+        this.closeAllModals();
+        this.showToast('Job added successfully!', 'success');
+        document.getElementById('addJobForm').reset();
+      }
+
+      handleEditJob(e) {
+        e.preventDefault();
+        const id = parseInt(document.getElementById('editJobId').value);
+        const updatedJob = {
+          title: document.getElementById('editJobTitle').value,
+          company: document.getElementById('editJobCompany').value,
+          location: document.getElementById('editJobLocation').value,
+          description: document.getElementById('editJobDescription').value
+        };
+        if (jobManager.updateJob(id, updatedJob)) {
+          this.closeAllModals();
+          this.showToast('Job updated successfully!', 'success');
+        }
+      }
+
+      handleJobSearch() {
+        const searchParams = {
+          keywords: document.getElementById('searchKeywords').value,
+          location: document.getElementById('searchLocation').value,
+          site: document.getElementById('searchSite').value
+        };
+
+        this.closeAllModals();
+        jobManager.scrapeJobs(searchParams);
+      }
+
+      handleLogout() {
+        if (confirm('Are you sure you want to logout?')) {
+          this.showToast('Logged out successfully!', 'success');
+          // Here you would typically redirect to login page
+        }
+      }
+
+      closeAllModals() {
+        document.querySelectorAll('.modal').forEach(modal => {
+          modal.classList.remove('active');
+        });
+      }
+
+      showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast ${type} active`;
+        setTimeout(() => {
+          toast.classList.remove('active');
+        }, 3000);
+      }
+    }
+
+    // Utility functions
+    function showModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+    }
+
+    function showLoading() {
+      document.querySelector('.loading').classList.add('active');
+    }
+
+    function hideLoading() {
+      document.querySelector('.loading').classList.remove('active');
+    }
+
+    // Initialize
+    const jobManager = new JobManager();
+    const uiManager = new UIManager();
+
+    // Initial render
+    jobManager.updateStats();
+    jobManager.renderJobs();
+
+    // Pagination
+    prevBtn.addEventListener('click', () => jobManager.prevPage());
+    nextBtn.addEventListener('click', () => jobManager.nextPage());
+  </script>
+</body>
+</html> 
