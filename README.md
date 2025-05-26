@@ -14,7 +14,7 @@ A modern, responsive admin dashboard built with HTML, CSS, and JavaScript. This 
 
 ## Live Demo
 
-[View Live Demo](https://your-github-username.github.io/admin-dashboard)
+[View Live Demo](https://akhlaqueceh.github.io/Scraper)
 
 ## Getting Started
 
