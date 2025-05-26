@@ -32,12 +32,18 @@ export async function POST() {
         const descriptionElement = job.querySelector('.job-snippet');
         const urlElement = job.querySelector('a.jcs-JobTitle');
 
+        let url = urlElement?.getAttribute('href') || '';
+        // If the URL is relative, prepend the Indeed domain
+        if (url && url.startsWith('/')) {
+          url = 'https://www.indeed.com' + url;
+        }
+
         return {
           title: titleElement?.textContent?.trim() || '',
           company: companyElement?.textContent?.trim() || '',
           location: locationElement?.textContent?.trim() || '',
           description: descriptionElement?.textContent?.trim() || '',
-          url: urlElement?.getAttribute('href') || '',
+          url,
           postedDate: new Date().toISOString(),
           source: 'Indeed',
         };
