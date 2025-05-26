@@ -5,6 +5,8 @@ const nextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
+  basePath: '/Scraper',
+  assetPrefix: '/Scraper/',
 }
 
 module.exports = nextConfig 
